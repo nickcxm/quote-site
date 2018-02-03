@@ -1,0 +1,205 @@
+{%load staticfiles%}
+{%load quote_tags%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Quote</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="{%static 'quote/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{%static 'quote/css/style.css'%}" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h3 class="text-center text-primary">
+				Quote
+			</h3>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<nav class="navbar navbar-default" role="navigation">
+				<div class="navbar-header">
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						 <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+					</button> <a class="navbar-brand" href="#">Brand</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#">Link</a>
+						</li>
+						<li>
+							<a href="#">Link</a>
+						</li>
+						<li class="dropdown">
+							 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="#">Action</a>
+								</li>
+								<li>
+									<a href="#">Another action</a>
+								</li>
+								<li>
+									<a href="#">Something else here</a>
+								</li>
+								<li class="divider">
+								</li>
+								<li>
+									<a href="#">Separated link</a>
+								</li>
+								<li class="divider">
+								</li>
+								<li>
+									<a href="#">One more separated link</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-left" role="search" method="get" action="{%url 'quote:search'%}">
+						<div class="form-group">
+							<input type="text" class="form-control" name="q" required />
+						</div>
+						<button type="submit" class="btn btn-default">
+							Submit
+						</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="#">Link</a>
+						</li>
+						<li class="dropdown">
+							 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="#">Action</a>
+								</li>
+								<li>
+									<a href="#">Another action</a>
+								</li>
+								<li>
+									<a href="#">Something else here</a>
+								</li>
+								<li class="divider">
+								</li>
+								<li>
+									<a href="#">Separated link</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+
+			</nav>
+		</div>
+	</div>
+</div>
+	<div class="row">
+		<div class="col-md-8">
+			{%if error_msg%}
+			<p>{{error_msg}}</p>
+			{%endif%}
+			{%for quote in quote_list%}
+			<blockquote>
+				<p>
+					"{{quote.text}}"
+				</p> <small>{{quote.author}}- time:<cite>{{quote.created_time}}</cite></small>
+
+				<!--<p></p>-->
+			</blockquote>
+			{%empty%}
+			暂无quote!
+			{%endfor%}
+			{%if is_paginated%}
+			<ul class="pagination">
+				{%if page_obj.has_previous%}
+				<li>
+					<a href="?page={{page_obj.prevois_page_number}}">Prev</a>
+				</li>
+				{%endif%}
+				<span class="current">第 {{page_obj.number}} 页 / 共 {{paginator.num_pages}} 页</span>
+				{%if page_obj.has_previous%}
+				<li>
+					<a href="?page={{page_obj.next_page_number}}">Next</a>
+				</li>
+				{%endif%}
+			</ul>
+			{%endif%}
+			<form role="form" action="{%url 'quote:add'%}" method="post">
+				 {%csrf_token%}
+
+				<div class="form-group">
+					<label for="{{form.text.id_for_label}}">
+						text
+					</label>
+					{{form.text}}
+					{{form.text.errors}}
+				</div>
+				<div class="form-group">
+
+					<label for="{{form.author.id_for_label}}">
+						author
+					</label>
+					{{form.author}}
+					{{form.author.errors}}
+				</div>
+				<div class="form-group">
+
+					<label for="{{form.tags.id_for_label}}">
+						tags
+					</label>
+					{{form.tags}}
+					{{form.tags.errors}}
+				</div>
+
+				<button type="submit" class="btn btn-default" >
+					Submit
+				</button>
+			</form>
+		</div>
+		<div class="col-md-4">
+			<h3>
+				Most popular tags
+			</h3>
+			<div class="btn-group btn-group-lg btn-group-vertical">
+				{%get_most_tags as tag_list%}
+				{%for tag in tag_list%}
+				<!--<button class="btn btn-default" type="button"  onclick="{url 'quote:tag' tag.pk}">-->
+					<!--<em class="glyphicon glyphicon-align-justify" ></em> {{tag.name}}-->
+				<!--</button>-->
+				<div>
+					<a href="{%url 'quote:tag' tag.pk%}">{{tag.name}}({{tag.num_quote}})</a>
+				</div>
+				{%endfor%}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>
+				by nickc
+			</h3>
+		</div>
+	</div>
+</div>
+
+    <script src="{%static 'quote/js/jquery.min.js'%}"></script>
+    <script src="{%static 'quote/js/bootstrap.min.js'%}"></script>
+    <script src="{%static 'quote/js/scripts.js'%}"></script>
+  </body>
+</html>
